@@ -1,22 +1,21 @@
 package com.example.hotelreservation
 
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 fun main() {
     println("호텔예약 프로그램 입니다.")
     val reservationList = RoomReservationList()
-//    val todatDate = DateTimeFormatter.ofPattern("yyyyMMdd")
     while (true) {
         println("[메뉴]")
         println("1. 방예약, 2. 예약자목록 출력, 3. 예약목록 (정렬) 출력, 4. 시스템 종료, 5. 금액 입금-출금 내역 목록 출력 6. 예약 변경/취소")
         var menuChoice = putMyInfo("menuChoice").toString().toInt()
         when (menuChoice) {
             1 -> {
-                val randomMoney = (10000..50000).random()
-                var reName = putMyInfo("Name").toString()
-                var reRoomNumber = putMyInfo("RoomNumber").toString()
-                var reCheckIn = putMyInfo("CheckIn", checkInDate = null, roomNumData = reRoomNumber, reservationList = reservationList).toString()
-                var reCheckOut = putMyInfo("CheckOut", reCheckIn).toString()
+                val reName = putMyInfo("Name").toString()
+                val reRoomNumber = putMyInfo("RoomNumber").toString()
+                val reCheckIn = putMyInfo("CheckIn", checkInDate = null, roomNumData = reRoomNumber, reservationList = reservationList).toString()
+                val reCheckOut = putMyInfo("CheckOut", reCheckIn).toString()
 
                 reservationList.addReservation(reName, reRoomNumber, reCheckIn, reCheckOut)
                 println("호텔 예약이 완료되었습니다.")
@@ -101,24 +100,22 @@ fun putMyInfo(
         }
 
         "CheckIn" -> {
-            println("체크인 날짜를 입력해주세요 표기형식. 20231130")
+            val today = LocalDateTime.now()
+            val todayDate = DateTimeFormatter.ofPattern("yyyyMMdd").format(today)
+            println("체크인 날짜를 입력해주세요 표기형식. $todayDate")
             while (true) {
                 try {
                     var checkIn: String? = readLine()
                     val isCheckIn = checkIn?.toInt()
-                    if (isCheckIn != null && isCheckIn <= 20231130) {
+                    if (isCheckIn != null && isCheckIn <= todayDate.toInt()) {
                         println("체크인은 지난날은 선택할 수 없습니다.")
+                        continue
                     }
-                    if (reservationList?.isRoomOk(
-                            roomNumData.toString(),
-                            checkIn.toString()
-                        ) == true
-                    ) {
+                    if (reservationList?.isRoomOk(roomNumData.toString(), checkIn.toString()) == true) {
                         return checkIn?.toInt() ?: -1
                     } else {
                         println("이미 해당날짜에 예약이 있습니다.")
                     }
-//                    return checkIn?.toInt() ?: -1
                 } catch (e: Exception) {
                     println("체크인은 지난날은 선택할 수 없습니다.")
                 }
@@ -126,7 +123,7 @@ fun putMyInfo(
         }
 
         "CheckOut" -> {
-            println("체크아웃 날짜를 입력해주세요 표기형식. 20231130")
+            println("체크아웃 날짜를 입력해주세요")
             while (true) {
                 try {
                     var checkOut: String? = readLine()
