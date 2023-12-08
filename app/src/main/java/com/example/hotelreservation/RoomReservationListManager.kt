@@ -15,7 +15,7 @@ data class Reservation(
     var myMoney:Int
 )
 
-class RoomReservationList {
+class RoomReservationListManager {
     private val reservations: MutableList<Reservation> = mutableListOf()
 
     //예약자를 정해주는 함수
@@ -83,9 +83,13 @@ class RoomReservationList {
 
             if (reservation.name == reName) {
                 println("$reName 님이 예약한 목록입니다. 변경하실 예약번호를 입력해주세요 (탈출은 exit입력)")
+                var checkIn = ""
+                var roomNum = ""
                 for ((index, res) in reservations.withIndex()) {
                     if (res.name == reName) {
                         println("${index + 1}: 방번호: ${res.roomNumber}호, 체크인: ${res.checkIn}, 체크아웃:  ${res.checkOut}")
+                        checkIn = res.checkIn
+                        roomNum = res.roomNumber
                     }
                 }
                 var myIndex = putInfo("choose number").toString().toInt()
@@ -94,7 +98,6 @@ class RoomReservationList {
                     var changeOrCancle = putInfo("changeOrCancle").toString().toInt()
                     when (changeOrCancle) {
                         1 -> {
-                            //예약변경 로직 구현 X
                             println("변경하실 내용을 선택해주세요.")
                             println("[1]. 방번호  [2]. 체크인날짜 [3]. 체크아웃 날짜")
                             var changeAny = putInfo("choose number").toString().toInt()
@@ -102,12 +105,24 @@ class RoomReservationList {
                                 1 -> {
                                     println("변경하실 방 번호를 입력해주세요")
                                     val newRoomNum = readLine().toString()
-                                    reservation.roomNumber = newRoomNum
+                                    if(isRoomOk(newRoomNum, checkIn)){
+                                        reservation.roomNumber = newRoomNum
+                                    }else{
+                                        println("해당 방번호는 이미 예약되어있습니다.")
+                                        break
+                                    }
+
                                 }
                                 2 -> {
                                     println("변경하실 체크인 날짜를 입력해주세요")
                                     val newCheckInDate = readLine().toString()
-                                    reservation.checkIn = newCheckInDate
+                                    if(isRoomOk(roomNum, checkIn)){
+                                        reservation.checkIn = newCheckInDate
+                                    }else{
+                                        println("해당 체크인날은 이미 예약되어있습니다.")
+                                        break
+                                    }
+
                                 }
                                 3 -> {
                                     println("변경하실 체크아웃 날짜를 입력해주세요")
